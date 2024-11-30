@@ -3,6 +3,6 @@
 
 -Snake Game 코드 :⚠️( 묘하게 오류가 있음;;)<br>
 -Tic Tae Toe Game 코드: 👌(작동 잘 됨)<br>
--Brick Game 코드 : 개발 Yet<br>
+-Brick Game 코드 : 개발 시작<br>
 -Zet Game 코드: 코드 업로드 아직 안 됨<br>
--Tetris Game 코드: 코드 업로드 아직 안 됨
+-Tetris Game 코드: 코드 업로드 아직 안 됨ㅊ
