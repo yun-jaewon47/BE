@@ -29,7 +29,7 @@ ball_speed_y = -5
 ball = pygame.Rect(screen_width // 2 - ball_radius, screen_height // 2 - ball_radius, ball_radius * 2, ball_radius * 2)
 
 # 벽돌 설정
-brick_width = 60
+brick_width = 80
 brick_height = 20
 bricks = []
 
