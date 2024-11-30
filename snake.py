@@ -1,3 +1,4 @@
+#오류;;!!!
 #Snake game
 import pygame
 import random
