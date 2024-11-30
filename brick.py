@@ -11,10 +11,10 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("벽돌 게임")
 
 # 색상 정의
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
+BLACK = "#000000"
+PINK = "#ff8ea0"
+RED = "#ff0000"
+BLUE = "#3c00ff"
 
 # 패들 설정
 paddle_width = 100
@@ -83,7 +83,7 @@ while running:
     # 화면 그리기
     screen.fill(BLACK)
     pygame.draw.rect(screen, BLUE, paddle)
-    pygame.draw.ellipse(screen, WHITE, ball)
+    pygame.draw.ellipse(screen, PINK, ball)
 
     for brick in bricks:
         pygame.draw.rect(screen, RED, brick)
