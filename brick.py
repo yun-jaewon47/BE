@@ -1,113 +1,96 @@
 import pygame
-import sys
+import random
 
-# 초기화
+# 게임 초기화
 pygame.init()
 
-# 화면 설정
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Brick Game")
+# 화면 크기 설정
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("벽돌 게임")
 
 # 색상 정의
-WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
 
-# 공 속성
-ball_radius = 10
-ball_x, ball_y = WIDTH // 2, HEIGHT // 2
-ball_speed_x, ball_speed_y = 4, 4
-
-# 패들 속성
-paddle_width, paddle_height = 100, 10
-paddle_x = WIDTH // 2 - paddle_width // 2
-paddle_y = HEIGHT - 30
+# 패들 설정
+paddle_width = 100
+paddle_height = 10
 paddle_speed = 6
+paddle = pygame.Rect(screen_width // 2 - paddle_width // 2, screen_height - 40, paddle_width, paddle_height)
 
-# 벽돌 속성
-brick_rows, brick_cols = 5, 10
-brick_width = WIDTH // brick_cols
+# 공 설정
+ball_radius = 10
+ball_speed_x = 4
+ball_speed_y = -4
+ball = pygame.Rect(screen_width // 2 - ball_radius, screen_height // 2 - ball_radius, ball_radius * 2, ball_radius * 2)
+
+# 벽돌 설정
+brick_width = 60
 brick_height = 20
-bricks = [[1 for _ in range(brick_cols)] for _ in range(brick_rows)]
+bricks = []
 
-# 폰트 설정
-font = pygame.font.Font(None, 36)
+for row in range(5):
+    for col in range(12):
+        brick = pygame.Rect(col * (brick_width + 5) + 35, row * (brick_height + 5) + 50, brick_width, brick_height)
+        bricks.append(brick)
 
 # 게임 루프
-clock = pygame.time.Clock()
 running = True
-score = 0
+clock = pygame.time.Clock()
 
 while running:
-    screen.fill(BLACK)
-
     # 이벤트 처리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # 패들 이동
+    # 키 입력 처리
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and paddle_x > 0:
-        paddle_x -= paddle_speed
-    if keys[pygame.K_RIGHT] and paddle_x < WIDTH - paddle_width:
-        paddle_x += paddle_speed
+    if keys[pygame.K_LEFT] and paddle.left > 0:
+        paddle.x -= paddle_speed
+    if keys[pygame.K_RIGHT] and paddle.right < screen_width:
+        paddle.x += paddle_speed
 
     # 공 이동
-    ball_x += ball_speed_x
-    ball_y += ball_speed_y
+    ball.x += ball_speed_x
+    ball.y += ball_speed_y
 
-    # 벽 충돌
-    if ball_x - ball_radius < 0 or ball_x + ball_radius > WIDTH:
+    # 공이 벽에 부딪힐 때 반사
+    if ball.left <= 0 or ball.right >= screen_width:
         ball_speed_x = -ball_speed_x
-    if ball_y - ball_radius < 0:
+    if ball.top <= 0:
         ball_speed_y = -ball_speed_y
 
-    # 패들 충돌
-    if paddle_y < ball_y + ball_radius < paddle_y + paddle_height and \
-       paddle_x < ball_x < paddle_x + paddle_width:
+    # 공이 패들과 부딪히는지 확인
+    if ball.colliderect(paddle):
         ball_speed_y = -ball_speed_y
 
-    # 벽돌 충돌
-    for row in range(brick_rows):
-        for col in range(brick_cols):
-            if bricks[row][col]:
-                brick_x = col * brick_width
-                brick_y = row * brick_height
-                if brick_x < ball_x < brick_x + brick_width and \
-                   brick_y < ball_y < brick_y + brick_height:
-                    ball_speed_y = -ball_speed_y
-                    bricks[row][col] = 0
-                    score += 1
+    # 공이 벽돌에 부딪히는지 확인
+    for brick in bricks[:]:
+        if ball.colliderect(brick):
+            bricks.remove(brick)
+            ball_speed_y = -ball_speed_y
 
-    # 공이 화면 아래로 떨어짐
-    if ball_y > HEIGHT:
+    # 공이 바닥에 떨어졌을 때
+    if ball.bottom >= screen_height:
         running = False
+        print("게임 오버!")
 
-    # 벽돌 그리기
-    for row in range(brick_rows):
-        for col in range(brick_cols):
-            if bricks[row][col]:
-                brick_x = col * brick_width
-                brick_y = row * brick_height
-                pygame.draw.rect(screen, RED, (brick_x, brick_y, brick_width, brick_height))
+    # 화면 그리기
+    screen.fill(BLACK)
+    pygame.draw.rect(screen, BLUE, paddle)
+    pygame.draw.ellipse(screen, WHITE, ball)
 
-    # 패들 그리기
-    pygame.draw.rect(screen, BLUE, (paddle_x, paddle_y, paddle_width, paddle_height))
+    for brick in bricks:
+        pygame.draw.rect(screen, RED, brick)
 
-    # 공 그리기
-    pygame.draw.circle(screen, GREEN, (ball_x, ball_y), ball_radius)
-
-    # 점수 표시
-    score_text = font.render(f"Score: {score}", True, WHITE)
-    screen.blit(score_text, (10, 10))
-
-    # 화면 업데이트
     pygame.display.flip()
+
+    # 게임 속도 설정
     clock.tick(60)
 
 pygame.quit()
-sys.exit()
